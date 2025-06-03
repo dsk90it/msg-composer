@@ -1,1 +1,1 @@
-# msg-composer
+# Message-composer
