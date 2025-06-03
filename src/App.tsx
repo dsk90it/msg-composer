@@ -1,10 +1,10 @@
+import ComposerInput from './components/ComposerInput'
+
 function App() {
   return (
-    <div className="p-4">
-      <p className="font-bold text-lg">Instruction:</p> Please create a compose
-      component, such that urls, mentions and hashtags are highlighted as
-      displayed 👉
-    </div>
+    <main className="mx-auto max-w-xl mt-8">
+      <ComposerInput />
+    </main>
   )
 }
 
