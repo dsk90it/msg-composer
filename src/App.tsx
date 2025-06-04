@@ -2,7 +2,7 @@ import ComposerInput from './components/ComposerInput'
 
 function App() {
   return (
-    <main className="mx-auto mt-8 max-w-xl">
+    <main className="mx-auto max-w-xl px-4 py-8">
       <ComposerInput />
     </main>
   )

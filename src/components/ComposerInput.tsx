@@ -14,7 +14,7 @@ function ComposerInput() {
 
   return (
     <>
-      <div className="relative h-32 w-full overflow-x-hidden rounded-2xl bg-white">
+      <div className="relative min-h-64 w-full overflow-x-hidden rounded-2xl bg-white sm:min-h-32">
         {/* textarea */}
         <textarea
           ref={textareaRef}
@@ -22,11 +22,11 @@ function ComposerInput() {
           maxLength={200}
           value={text}
           onChange={handleChange}
-          className="custom-scrollbar absolute inset-x-0 bottom-8 top-0 z-[1] h-32 resize-none bg-transparent px-6 py-4 text-base text-transparent caret-slate-900 outline-none placeholder:text-slate-400"
+          className="custom-scrollbar absolute inset-x-0 bottom-8 top-0 z-[1] h-64 resize-none bg-transparent px-6 py-4 text-base text-transparent caret-slate-900 outline-none placeholder:text-slate-400 sm:h-32"
         />
 
         {/* highlight-text */}
-        <div className="absolute inset-x-0 bottom-8 top-0 z-0 h-32 whitespace-pre-wrap break-words px-6 py-4 text-start text-base">
+        <div className="absolute inset-x-0 bottom-8 top-0 z-0 h-64 whitespace-pre-wrap break-words px-6 py-4 text-start text-base sm:h-32">
           {text}
         </div>
 
