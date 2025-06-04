@@ -1,14 +1,19 @@
 import React, { useRef, useState } from 'react'
-import getCaretCoordinates from 'textarea-caret'
 import clsx from 'clsx'
+import getCaretCoordinates from 'textarea-caret'
+import { hashtagRegex, mentionRegex, urlRegex } from '../utils'
 
-const mentionsList = ['french', 'friday', 'frog']
-const urlRegex =
-  /\b((?:https?:\/\/|www\.)?[a-zA-Z0-9.-]+\.(?:com|org|net|io|dev|co|ai|gov|edu|info|biz|me|app|tech|tv|us|uk|ca))(?=\/|\b)(\/[^\s]*)?/gi
-const hashtagRegex = /#[\w]+/gi
-const mentionRegex = /@[\w]+/gi
+export type Mention = {
+  id: string | number
+  username: string
+}
 
-function ComposerInput() {
+type ComposerInuptProps = {
+  mentionsList: Mention[]
+  maxLength?: number
+}
+
+function ComposerInput({ mentionsList, maxLength = 200 }: ComposerInuptProps) {
   const [text, setText] = useState('')
   const [mentionQuery, setMentionQuery] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
@@ -41,12 +46,15 @@ function ComposerInput() {
     }
   }
 
-  const handleSelectMention = (mention: string) => {
+  const handleSelectMention = (mention: Mention) => {
     const cursorPos = textareaRef.current?.selectionStart || 0
     const beforeCursor = text.substring(0, cursorPos)
     const afterCursor = text.substring(cursorPos)
 
-    const updatedBefore = beforeCursor.replace(/@(\w*)$/, `@${mention} `)
+    const updatedBefore = beforeCursor.replace(
+      /@(\w*)$/,
+      `@${mention.username} `,
+    )
     const newText = updatedBefore + afterCursor
 
     setText(newText)
@@ -59,7 +67,7 @@ function ComposerInput() {
   }
 
   const filteredMentions = mentionsList.filter((item) =>
-    item.toLowerCase().startsWith(mentionQuery.toLowerCase()),
+    item.username.toLowerCase().startsWith(mentionQuery.toLowerCase()),
   )
 
   const getHighlightedText = (input: string) => {
@@ -101,7 +109,7 @@ function ComposerInput() {
         <textarea
           ref={textareaRef}
           placeholder="write something..."
-          maxLength={200}
+          maxLength={maxLength}
           value={text}
           onChange={handleChange}
           spellCheck={false}
@@ -117,13 +125,13 @@ function ComposerInput() {
         <p
           className={clsx(
             'absolute bottom-0 end-0 px-6 py-3 text-end text-xs',
-            text.length < 200 ? 'text-gray-400' : 'text-slate-900',
+            text.length < maxLength ? 'text-gray-400' : 'text-slate-900',
           )}
         >
           <span className={clsx(text.length > 0 && 'text-slate-900')}>
             {text.length}
           </span>
-          /200
+          /{maxLength}
         </p>
       </div>
 
@@ -133,13 +141,13 @@ function ComposerInput() {
           className="custom-scrollbar absolute z-10 max-h-56 w-44 overflow-clip rounded-lg bg-white text-sm shadow-lg transition-all"
           style={{ top: dropdownPos.top, left: dropdownPos.left }}
         >
-          {filteredMentions.map((mention, i) => (
+          {filteredMentions.map((mention) => (
             <li
-              key={i}
+              key={mention.id}
               className="cursor-pointer px-3 py-2 transition-all hover:bg-gray-100"
               onClick={() => handleSelectMention(mention)}
             >
-              {mention}
+              {mention.username}
             </li>
           ))}
         </ul>
