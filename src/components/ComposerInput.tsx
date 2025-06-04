@@ -2,6 +2,9 @@ import React, { useRef, useState } from 'react'
 import clsx from 'clsx'
 
 const mentionsList = ['french', 'friday', 'frog & fries']
+const urlRegex = /\bhttps?:\/\/[^\s]+|www\.[^\s]+/gi
+const hashtagRegex = /#[\w]+/gi
+const mentionRegex = /@[\w]+/gi
 
 function ComposerInput() {
   const [text, setText] = useState('')
@@ -25,9 +28,58 @@ function ComposerInput() {
     }
   }
 
+  const handleSelectMention = (mention: string) => {
+    const cursorPos = textareaRef.current?.selectionStart || 0
+    const beforeCursor = text.substring(0, cursorPos)
+    const afterCursor = text.substring(cursorPos)
+
+    const updatedBefore = beforeCursor.replace(/@(\w*)$/, `@${mention} `)
+    const newText = updatedBefore + afterCursor
+
+    setText(newText)
+    setMentionQuery('')
+    setShowDropdown(false)
+
+    setTimeout(() => {
+      textareaRef.current?.focus()
+    }, 0)
+  }
+
   const filteredMentions = mentionsList.filter((item) =>
     item.toLowerCase().startsWith(mentionQuery.toLowerCase()),
   )
+
+  const getHighlightedText = (input: string) => {
+    const tokens = input.split(/(\s+)/) // Keep spaces
+
+    return tokens.map((token, idx) => {
+      if (urlRegex.test(token)) {
+        return (
+          <span key={idx} className="font-semibold text-indigo-600">
+            {token}
+          </span>
+        )
+      }
+      if (hashtagRegex.test(token)) {
+        return (
+          <span
+            key={idx}
+            className="cursor-pointer font-semibold text-indigo-600"
+          >
+            {token}
+          </span>
+        )
+      }
+      if (mentionRegex.test(token)) {
+        return (
+          <span key={idx} className="rounded bg-gray-100 py-1 font-semibold">
+            {token}
+          </span>
+        )
+      }
+      return <span key={idx}>{token}</span>
+    })
+  }
 
   return (
     <div className="relative overflow-y-visible">
@@ -45,7 +97,7 @@ function ComposerInput() {
 
         {/* highlight-text */}
         <div className="absolute inset-x-0 bottom-8 top-0 z-0 h-64 whitespace-pre-wrap break-words px-6 py-4 text-start text-base sm:h-32">
-          {text}
+          {getHighlightedText(text)}
         </div>
 
         {/* length-limit */}
