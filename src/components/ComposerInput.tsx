@@ -2,7 +2,8 @@ import React, { useRef, useState } from 'react'
 import clsx from 'clsx'
 
 const mentionsList = ['french', 'friday', 'frog & fries']
-const urlRegex = /\bhttps?:\/\/[^\s]+|www\.[^\s]+/gi
+const urlRegex =
+  /\b((?:https?:\/\/|www\.)?[a-zA-Z0-9.-]+\.(?:com|org|net|io|dev|co|ai|gov|edu|info|biz|me|app|tech|tv|us|uk|ca))(?=\/|\b)(\/[^\s]*)?/gi
 const hashtagRegex = /#[\w]+/gi
 const mentionRegex = /@[\w]+/gi
 
