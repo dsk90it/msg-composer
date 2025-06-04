@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react'
+import getCaretCoordinates from 'textarea-caret'
 import clsx from 'clsx'
 
-const mentionsList = ['french', 'friday', 'frog & fries']
+const mentionsList = ['french', 'friday', 'frog']
 const urlRegex =
   /\b((?:https?:\/\/|www\.)?[a-zA-Z0-9.-]+\.(?:com|org|net|io|dev|co|ai|gov|edu|info|biz|me|app|tech|tv|us|uk|ca))(?=\/|\b)(\/[^\s]*)?/gi
 const hashtagRegex = /#[\w]+/gi
@@ -11,6 +12,8 @@ function ComposerInput() {
   const [text, setText] = useState('')
   const [mentionQuery, setMentionQuery] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 })
+
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -24,6 +27,15 @@ function ComposerInput() {
     if (match) {
       setMentionQuery(match[1])
       setShowDropdown(true)
+
+      if (textareaRef.current) {
+        const coords = getCaretCoordinates(textareaRef.current, cursorPos)
+
+        setDropdownPos({
+          top: coords.top + 24,
+          left: coords.left,
+        })
+      }
     } else {
       setShowDropdown(false)
     }
@@ -51,7 +63,7 @@ function ComposerInput() {
   )
 
   const getHighlightedText = (input: string) => {
-    const tokens = input.split(/(\s+)/) // Keep spaces
+    const tokens = input.split(/(\s+)/) // keep spaces
 
     return tokens.map((token, idx) => {
       if (urlRegex.test(token)) {
@@ -117,7 +129,10 @@ function ComposerInput() {
 
       {/* mentions-dropdown */}
       {showDropdown && filteredMentions.length > 0 && (
-        <ul className="custom-scrollbar mt-4 max-h-56 w-44 overflow-clip rounded-lg bg-white text-sm shadow-lg transition-all">
+        <ul
+          className="custom-scrollbar absolute z-10 max-h-56 w-44 overflow-clip rounded-lg bg-white text-sm shadow-lg transition-all"
+          style={{ top: dropdownPos.top, left: dropdownPos.left }}
+        >
           {filteredMentions.map((mention, i) => (
             <li
               key={i}
